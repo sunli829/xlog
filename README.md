@@ -1,4 +1,4 @@
-# Xactor is a rust actors framework based on async-std
+# Xlog can add key/value pairs to your log lines.
 
 <div align="center">
   <!-- CI -->
