@@ -9,6 +9,7 @@ license = "MIT/Apache-2.0"
 documentation = "https://docs.rs/xlog/"
 homepage = "https://github.com/sunli829/xlog"
 repository = "https://github.com/sunli829/xlog"
+readme = "README.md"
 
 [dependencies]
 log = "0.4"
