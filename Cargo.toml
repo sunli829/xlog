@@ -1,0 +1,19 @@
+[package]
+name = "xlog"
+version = "0.1.0"
+authors = ["Sunli <scott_s829@163.com>"]
+edition = "2018"
+description = "Xlog can add key/value pairs to your log lines."
+publish = true
+license = "MIT/Apache-2.0"
+documentation = "https://docs.rs/xlog/"
+homepage = "https://github.com/sunli829/xlog"
+repository = "https://github.com/sunli829/xlog"
+
+[dependencies]
+log = "0.4"
+serde_json = "1.0"
+
+[dev-dependencies]
+simple_logger = "1.0"
+
