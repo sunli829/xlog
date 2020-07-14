@@ -70,7 +70,7 @@ macro_rules! msg_and_kvs {
         xlog::msg_and_kvs!(@fmt $fmt @args [$($args,)* $value,] $($tail)+)
     };
 
-    // Last format params
+    // Last format param
     (@fmt $fmt:literal @args [$($args:expr,)*] $value:expr) => {
         xlog::msg_and_kvs!(@finish @fmt $fmt @args [$($args,)* $value,] @kvs [])
     };
@@ -93,17 +93,19 @@ macro_rules! msg_and_kvs {
 #[macro_export]
 macro_rules! log {
     (target: $target:expr, $level:expr, $($args:tt)*) => {
-        let (message, kvs) = xlog::msg_and_kvs!($($args)*);
-        let s = if let Some(kvs) = kvs {
-            if let Ok(kv_json) = xlog::serde_json::to_string(&kvs) {
-                std::borrow::Cow::Owned(format!("{} {}", message, kv_json))
+        {
+            let (message, kvs) = xlog::msg_and_kvs!($($args)*);
+            let s = if let Some(kvs) = kvs {
+                if let Ok(kv_json) = xlog::serde_json::to_string(&kvs) {
+                    std::borrow::Cow::Owned(format!("{} {}", message, kv_json))
+                } else {
+                    std::borrow::Cow::Owned(format!("{} InvalidJson", message))
+                }
             } else {
-                std::borrow::Cow::Owned(format!("{} InvalidJson", message))
-            }
-        } else {
-            message
-        };
-        xlog::_log::log!(target: $target, $level, "{}", s)
+                message
+            };
+            xlog::_log::log!(target: $target, $level, "{}", s)
+        }
     };
     (target = $target:expr, $level:expr, $($args:tt)*) => {
         xlog::log!(target: $target, $level, $($args)+)
