@@ -12,6 +12,14 @@
 //! info!(target = "a", "hello");
 //! ```
 //!
+//! # Error Key
+//!
+//! ```rust
+//! use xlog::error;
+//! use std::io::{Error, ErrorKind};
+//! error!("Failed to open database", error = Error::from(ErrorKind::InvalidData))
+//! ```
+//!
 //! # Examples
 //! ```ignore
 //! use xlog::{info, error};
@@ -81,11 +89,19 @@ macro_rules! msg_and_kvs {
             #[allow(unused_mut)]
             let mut kvs = xlog::serde_json::Map::<String, xlog::serde_json::Value>::new();
             $(
-                kvs.insert(stringify!($key).to_string(), xlog::serde_json::to_value(&$value).unwrap());
+                xlog::msg_and_kvs!(@insert kvs, $key, $value);
             )*
             let msg = format!($fmt, $($args,)*);
             (std::borrow::Cow::Owned::<'static, String>(msg), if kvs.is_empty() { None } else { Some(kvs) })
         }
+    };
+
+    (@insert $kvs:expr, error, $value:expr) => {
+        $kvs.insert(stringify!($key).to_string(), xlog::serde_json::to_value($value.to_string()).unwrap());
+    };
+
+    (@insert $kvs:expr, $key:ident, $value:expr) => {
+        $kvs.insert(stringify!($key).to_string(), xlog::serde_json::to_value(&$value).unwrap());
     };
 }
 
