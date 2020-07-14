@@ -18,7 +18,7 @@
 //! use xlog::error;
 //! use std::io::{Error, ErrorKind};
 //! error!("Failed to open database", error = Error::from(ErrorKind::InvalidData))
-//! ```
+//! ```c
 //!
 //! # Examples
 //! ```ignore
