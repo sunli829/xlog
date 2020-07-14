@@ -41,7 +41,7 @@ macro_rules! msg_and_kvs {
     };
 
     // Literal only
-    ($fmt:literal) => {
+    ($fmt:literal $(,)*) => {
         (std::borrow::Cow::Borrowed($fmt), Option::<xlog::serde_json::Map::<String, xlog::serde_json::Value>>::None)
     };
 
@@ -56,12 +56,12 @@ macro_rules! msg_and_kvs {
     };
 
     // Last KV param
-    (@fmt $fmt:literal @args [$($args:expr,)*] $key:ident = $value:expr) => {
+    (@fmt $fmt:literal @args [$($args:expr,)*] $key:ident = $value:expr $(,)*) => {
         xlog::msg_and_kvs!(@finish @fmt $fmt @args [$($args,)*] @kvs [$key = $value,])
     };
 
     // Last KV param
-    (@fmt $fmt:literal @args [$($args:expr,)*] @kvs [$($pkey:ident = $pvalue:expr,)*] $key:ident = $value:expr) => {
+    (@fmt $fmt:literal @args [$($args:expr,)*] @kvs [$($pkey:ident = $pvalue:expr,)*] $key:ident = $value:expr $(,)*) => {
         xlog::msg_and_kvs!(@finish @fmt $fmt @args [$($args,)*] @kvs [$($pkey = $pvalue,)* $key = $value,])
     };
 
@@ -71,7 +71,7 @@ macro_rules! msg_and_kvs {
     };
 
     // Last format param
-    (@fmt $fmt:literal @args [$($args:expr,)*] $value:expr) => {
+    (@fmt $fmt:literal @args [$($args:expr,)*] $value:expr $(,)*) => {
         xlog::msg_and_kvs!(@finish @fmt $fmt @args [$($args,)* $value,] @kvs [])
     };
 

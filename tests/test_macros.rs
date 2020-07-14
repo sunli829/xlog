@@ -4,6 +4,21 @@ use xlog::*;
 fn test_macros() {
     simple_logger::init().unwrap();
 
+    trace!("msg",);
+    trace!("msg {}", 1,);
+    trace!("msg {}", 1, a = 10, b = 20,);
+
+    trace!(target: "abc", "msg",);
+
+    trace!(target = "abc", "msg",);
+    trace!(target = "abc", "msg {}", 1,);
+
+    trace!(target = "abc", "msg", a = 10,);
+    trace!(target = "abc", "msg", a = 10, b = 20,);
+
+    trace!(target = "abc", "msg {}", 1, a = 10);
+    trace!(target = "abc", "msg {}", 1, a = 10, b = 20);
+
     trace!("msg");
     trace!("msg {}", 1);
     trace!("msg {}", 1, a = 10, b = 20);
