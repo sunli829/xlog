@@ -2,7 +2,7 @@ use xlog::*;
 
 #[test]
 fn test_macros() {
-    simple_logger::init().unwrap();
+    femme::start(LevelFilter::Debug).unwrap();
 
     trace!("msg",);
     trace!("msg {}", 1,);
@@ -94,5 +94,5 @@ fn test_macros() {
     error!(target = "abc", "msg {}", 1, a = 10);
     error!(target = "abc", "msg {}", 1, a = 10, b = 20);
 
-    trace!("msg", error = anyhow::anyhow!("haha"));
+    trace!("msg", error = anyhow::anyhow!("haha").to_string());
 }

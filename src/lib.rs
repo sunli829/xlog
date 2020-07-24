@@ -34,11 +34,10 @@
 
 #[doc(hidden)]
 pub use log as _log;
-#[doc(hidden)]
-pub use serde_json;
 
 pub use _log::log_enabled;
 pub use _log::Level;
+pub use _log::LevelFilter;
 
 #[doc(hidden)]
 #[macro_export]
@@ -50,7 +49,7 @@ macro_rules! msg_and_kvs {
 
     // Literal only
     ($fmt:literal $(,)*) => {
-        (std::borrow::Cow::Borrowed($fmt), Option::<xlog::serde_json::Map::<String, xlog::serde_json::Value>>::None)
+        xlog::_log::Record::builder().args(format_args!($fmt))
     };
 
     // First kv param
@@ -85,24 +84,14 @@ macro_rules! msg_and_kvs {
 
     // Finish
     (@finish @fmt $fmt:literal @args [$($args:expr,)*] @kvs [$($key:ident = $value:expr,)*]) => {
-        {
-            #[allow(unused_mut)]
-            let mut kvs = xlog::serde_json::Map::<String, xlog::serde_json::Value>::new();
-            $(
-                xlog::msg_and_kvs!(@insert kvs, $key, $value);
-            )*
-            let msg = format!($fmt, $($args,)*);
-            (std::borrow::Cow::Owned::<'static, String>(msg), if kvs.is_empty() { None } else { Some(kvs) })
-        }
+        xlog::_log::Record::builder()
+            .args(format_args!($fmt, $($args),*))
+            .key_values(xlog::msg_and_kvs!(@kvs [$($key = $value,)*]))
     };
 
-    (@insert $kvs:expr, error, $value:expr) => {
-        $kvs.insert(stringify!($key).to_string(), xlog::serde_json::to_value($value.to_string()).unwrap());
-    };
+    (@kvs []) => { &Option::<&dyn xlog::_log::kv::Source>::None };
 
-    (@insert $kvs:expr, $key:ident, $value:expr) => {
-        $kvs.insert(stringify!($key).to_string(), xlog::serde_json::to_value(&$value).unwrap());
-    };
+    (@kvs [$($key:ident = $value:expr,)*]) => { &Some(&vec![$((stringify!($key), &$value)),*]) };
 }
 
 /// The standard logging macro.
@@ -110,17 +99,15 @@ macro_rules! msg_and_kvs {
 macro_rules! log {
     (target: $target:expr, $level:expr, $($args:tt)*) => {
         {
-            let (message, kvs) = xlog::msg_and_kvs!($($args)*);
-            let s = if let Some(kvs) = kvs {
-                if let Ok(kv_json) = xlog::serde_json::to_string(&kvs) {
-                    std::borrow::Cow::Owned(format!("{} {}", message, kv_json))
-                } else {
-                    std::borrow::Cow::Owned(format!("{} InvalidJson", message))
-                }
-            } else {
-                message
-            };
-            xlog::_log::log!(target: $target, $level, "{}", s)
+            xlog::_log::logger().log(
+                &xlog::msg_and_kvs!($($args)*)
+                    .level($level)
+                    .target($target)
+                    .module_path_static(Some(module_path!()))
+                    .file_static(Some(file!()))
+                    .line(Some(line!()))
+                    .build()
+                );
         }
     };
     (target = $target:expr, $level:expr, $($args:tt)*) => {
