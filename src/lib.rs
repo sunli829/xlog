@@ -17,7 +17,7 @@
 //! ```rust
 //! use xlog::error;
 //! use std::io::{Error, ErrorKind};
-//! error!("Failed to open database", error = Error::from(ErrorKind::InvalidData))
+//! error!("Failed to open database", error = Error::from(ErrorKind::InvalidData).to_string())
 //! ```
 //!
 //! # Examples
