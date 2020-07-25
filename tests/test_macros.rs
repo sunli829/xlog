@@ -94,5 +94,7 @@ fn test_macros() {
     error!(target = "abc", "msg {}", 1, a = 10);
     error!(target = "abc", "msg {}", 1, a = 10, b = 20);
 
+    error!(target = "abc", "msg {}", 1, a = 10, b = "20");
+
     trace!("msg", error = anyhow::anyhow!("haha").to_string());
 }

@@ -91,7 +91,7 @@ macro_rules! msg_and_kvs {
 
     (@kvs []) => { &Option::<&dyn xlog::_log::kv::Source>::None };
 
-    (@kvs [$($key:ident = $value:expr,)*]) => { &Some(&vec![$((stringify!($key), &$value)),*]) };
+    (@kvs [$($key:ident = $value:expr,)*]) => { &Some(&vec![$((stringify!($key), &$value as &dyn xlog::_log::kv::ToValue)),*]) };
 }
 
 /// The standard logging macro.
