@@ -12,7 +12,7 @@ repository = "https://github.com/sunli829/xlog"
 readme = "README.md"
 
 [dependencies]
-log = { version = "0.4", features = ["kv_unstable"] }
+log = { version = "0.4.11", features = ["kv_unstable"] }
 
 [dev-dependencies]
 femme = "1.3"
