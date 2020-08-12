@@ -62,6 +62,11 @@ macro_rules! msg_and_kvs {
         xlog::msg_and_kvs!(@fmt $fmt @args [$($args,)*] @kvs [$($pkey = $pvalue,)* $key = $value,] $($tail)+)
     };
 
+    // Following KV params
+    (@fmt $fmt:literal @args [$($args:expr,)*] @kvs [$($pkey:ident = $pvalue:expr,)*] $key:ident, $($tail:tt)+) => {
+        xlog::msg_and_kvs!(@fmt $fmt @args [$($args,)*] @kvs [$($pkey = $pvalue,)* $key = $key,] $($tail)+)
+    };
+
     // Last KV param
     (@fmt $fmt:literal @args [$($args:expr,)*] $key:ident = $value:expr $(,)*) => {
         xlog::msg_and_kvs!(@finish @fmt $fmt @args [$($args,)*] @kvs [$key = $value,])
@@ -70,6 +75,11 @@ macro_rules! msg_and_kvs {
     // Last KV param
     (@fmt $fmt:literal @args [$($args:expr,)*] @kvs [$($pkey:ident = $pvalue:expr,)*] $key:ident = $value:expr $(,)*) => {
         xlog::msg_and_kvs!(@finish @fmt $fmt @args [$($args,)*] @kvs [$($pkey = $pvalue,)* $key = $value,])
+    };
+
+    // Last KV param
+    (@fmt $fmt:literal @args [$($args:expr,)*] @kvs [$($pkey:ident = $pvalue:expr,)*] $key:ident $(,)*) => {
+        xlog::msg_and_kvs!(@finish @fmt $fmt @args [$($args,)*] @kvs [$($pkey = $pvalue,)* $key = $key,])
     };
 
     // Format params
