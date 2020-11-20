@@ -108,7 +108,7 @@ macro_rules! msg_and_kvs {
 #[macro_export]
 macro_rules! log {
     (target: $target:expr, $level:expr, $($args:tt)*) => {
-        {
+        if xlog::_log::log_enabled!($level) {
             xlog::_log::logger().log(
                 &xlog::msg_and_kvs!($($args)*)
                     .level($level)
